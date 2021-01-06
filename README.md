@@ -40,6 +40,7 @@
 
 ## Screen Recording
 *TODO* Provide a link to a screen recording of the project in action. Remember that the screencast should demonstrate:
+[YouTube Link](https://youtu.be/8PUd4A_N4ro)
 - A working model
 - Demo of the deployed  model
 - Demo of a sample request sent to the endpoint and its response
