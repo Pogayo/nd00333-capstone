@@ -62,7 +62,6 @@ run = Run.get_context()
 def main():
     # Add arguments to script
     parser = argparse.ArgumentParser()
-    parser.add_argument('--data_path', type=str, default="", help="Path of data in storage")
     parser.add_argument('--n_estimators', type=int, default=100, help="Inverse of regularization strength. Smaller values cause stronger regularization")
     parser.add_argument('--max_depth', type=int, default=6, help="Maximum number of iterations to converge")
 
@@ -71,16 +70,23 @@ def main():
     run.log("Number of estimators:", np.float(args.n_estimators))
     run.log("Max depth:", np.int(args.max_depth))
     
-    # TODO: Create TabularDataset using TabularDatasetFactory
-
-    # data_path= "https://automlsamplenotebookdata.blob.core.windows.net/automl-sample-notebook-data/bankmarketing_train.csv"  #change path
-    data_path= args.data_path
+    # TODO: Create TabularDataset
     
-    ds =TabularDatasetFactory.from_delimited_files(path=data_path, separator=",")
+
+    from azureml.core import Workspace, Dataset
+
+    subscription_id = '2c48c51c-bd47-40d4-abbe-fb8eabd19c8c'
+    resource_group = 'aml-quickstarts-133759'
+    workspace_name = 'quick-starts-ws-133759'
+
+    workspace = Workspace(subscription_id, resource_group, workspace_name)
+
+    dataset = Dataset.get_by_name(workspace, name='mental_health_clf')
+    dataset.to_pandas_dataframe()
+   
+    ds=dataset
 
     X_train, X_test, y_train, y_test= clean_data(ds)
-
-
 
     model = XGBClassifier(n_estimators=args.n_estimators, max_depth=args.max_depth).fit(X_train, y_train)
     
