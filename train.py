@@ -3,9 +3,8 @@ import pandas as pd
 import numpy as np
 
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
-from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.model_selection import train_test_split, 
 from sklearn.metrics import roc_auc_score, accuracy_score
-from sklearn import naive_bayes
 
 
 import argparse
@@ -25,18 +24,6 @@ def clean_data(data):
     train_df = data.to_pandas_dataframe().dropna()
 
     train_df["label"]=train_df["label"].apply(int)
-
-
-    train_df.describe()
-
-    train_df['word_count'] =train_df["text"].apply(lambda x: len(str(x).split(" ")))
-    train_df['char_count'] = train_df["text"].apply(lambda x: sum(len(word) for word in str(x).split(" ")))
-    train_df['sentence_count'] = train_df["text"].apply(lambda x: len(str(x).split(".")))
-    train_df['avg_word_length'] = train_df['char_count'] / train_df['word_count']
-    train_df['avg_sentence_lenght'] =train_df['word_count'] / train_df['sentence_count']
-    train_df.head()
-
-    train_df["label"]=train_df["label"].apply(lambda x:x+1)
 
     vectorizer=TfidfVectorizer(strip_accents='ascii', sublinear_tf=True, min_df=2, max_df=0.5)
 
@@ -64,21 +51,19 @@ ws=run.experiment.workspace
 def main():
     # Add arguments to script
     parser = argparse.ArgumentParser()
-    parser.add_argument("--input_data", type=str)
-    parser.add_argument('--n_estimators', type=int, default=100, help="Inverse of regularization strength. Smaller values cause stronger regularization")
-    parser.add_argument('--max_depth', type=int, default=6, help="Maximum number of iterations to converge")
+    parser.add_argument("--input_data", type=str, help="Id of the registered train dataset")
+    parser.add_argument('--n_estimators', type=int, default=100, help="Number of estimators")
+    parser.add_argument('--max_depth', type=int, default=6, help="Maximum depth of the trees")
 
     args = parser.parse_args()
     
     run.log("Number of estimators:", np.float(args.n_estimators))
     run.log("Max depth:", np.int(args.max_depth))
     
-    # TODO: Create TabularDataset
+    # Create TabularDataset
     
     dataset = Dataset.get_by_id(ws, id=args.input_data)
-    dataset.to_pandas_dataframe()
    
-
     X_train, X_test, y_train, y_test= clean_data(dataset)
 
     model = XGBClassifier(n_estimators=args.n_estimators, max_depth=args.max_depth).fit(X_train, y_train)
