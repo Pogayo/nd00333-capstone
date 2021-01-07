@@ -11,8 +11,9 @@ from sklearn import naive_bayes
 import argparse
 import os
 import joblib
-
-from azureml.core.run import Run
+import pickle
+from azureml.core import Workspace, Dataset
+from azureml.core.run import Run 
 from azureml.data.dataset_factory import TabularDatasetFactory
 
 from xgboost import XGBClassifier
@@ -57,11 +58,13 @@ def clean_data(data):
 
 
 run = Run.get_context()
+ws=run.experiment.workspace
 
    
 def main():
     # Add arguments to script
     parser = argparse.ArgumentParser()
+    parser.add_argument("--input_data", type=str)
     parser.add_argument('--n_estimators', type=int, default=100, help="Inverse of regularization strength. Smaller values cause stronger regularization")
     parser.add_argument('--max_depth', type=int, default=6, help="Maximum number of iterations to converge")
 
@@ -72,24 +75,19 @@ def main():
     
     # TODO: Create TabularDataset
     
-
-    from azureml.core import Workspace, Dataset
-
-    subscription_id = '2c48c51c-bd47-40d4-abbe-fb8eabd19c8c'
-    resource_group = 'aml-quickstarts-133759'
-    workspace_name = 'quick-starts-ws-133759'
-
-    workspace = Workspace(subscription_id, resource_group, workspace_name)
-
-    dataset = Dataset.get_by_name(workspace, name='mental_health_clf')
+    dataset = Dataset.get_by_id(ws, id=args.input_data)
     dataset.to_pandas_dataframe()
    
-    ds=dataset
 
-    X_train, X_test, y_train, y_test= clean_data(ds)
+    X_train, X_test, y_train, y_test= clean_data(dataset)
 
     model = XGBClassifier(n_estimators=args.n_estimators, max_depth=args.max_depth).fit(X_train, y_train)
     
+    #saving the model
+    os.makedirs("outputs", exist_ok=True)
+    filename = 'outputs/model.pkl'
+    pickle.dump(model, open(filename, 'wb'))
+
     y_pred = model.predict(X_test)
     accuracy = accuracy_score(y_test, y_pred)
     run.log("Accuracy", np.float(accuracy))
