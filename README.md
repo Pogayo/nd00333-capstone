@@ -1,11 +1,43 @@
-
 # Mental Health Classification
+
+## Table of Contents
+
+- [Mental Health Classification](#mental-health-classification)
+  * [Project Overview](#project-overview)
+  * [Repository structure](#repository-structure)
+  * [Project Set Up and Installation](#project-set-up-and-installation)
+  * [Dataset](#dataset)
+    + [Overview](#overview)
+    + [Task](#task)
+    + [Access](#access)
+  * [Automated ML](#automated-ml)
+    + [Results](#results)
+    + [Model explaianability](#model-explaianability)
+  * [Hyperparameter Tuning](#hyperparameter-tuning)
+    + [Results](#results-1)
+  * [Model Deployment](#model-deployment)
+  * [Future Improvement](#future-improvement)
+  * [Screen Recording](#screen-recording)
+  * [Standout Suggestions](#standout-suggestions)
+
+## Project Overview
 
 This mental health classification project is based on [this competition](https://zindi.africa/competitions/basic-needs-basic-rights-kenya-tech4mentalhealth) that was hosted on Zindi. I want to classify statements and expressions of university students into four mental health categories; depression, suicide, alcohol and drugs. This could be useful in providing quick services online such as in chatbots. 
 
 Unlike in the competition, I generate the class predictions instead of the probabilities. 
 
 The model is deployed in an ACI instance and available for inferencing via a http REST endpoint. The deployed model enpoint takes care of everything including data transformation to a form that is ready for prediction by the machine learning model. You can send both a one observation or multiple observations for inference. 
+
+Below is the project architecture.
+
+![Project architecture](project_architecture.png)
+
+## Repository Structure
+The following folders exist: 
+ - data : contains train and test data
+ - screenshots : contains required screenshots of the experiment results
+ - deployed_environment : contains the details on the deployed environment
+
 
 ## Project Set Up and Installation
 
@@ -60,7 +92,7 @@ automl_config = AutoMLConfig(task="classification", #this is our goal, to classi
                              compute_target=cpu_cluster, #created a cluster for it
                              debug_log='automl_errors.log', #file where the errors will be logged, useful in debugging
                              path=project_folder, #folder that contains 
-                             model_explainability=True,
+                             model_explainability=True, #help to explain the model
                              **automl_settings,
                             ) 
 ```
@@ -80,11 +112,14 @@ The best model was a Voting Ensemble model with a cv accuracy of 0.8646.  The en
 
 ![Best model in the ML Studio](screenshots/best_model_run_id.PNG) *The best model was a voting ensemble with an accuracy of 0.8646*
 
+### Model explaianability
+
+Since we enebled model explainability, one can understand why the best model is making the predictions and what it learnt by using this feature on the AzureML studio or in the notebook using the corresponding AzureML sdk code. It will be interesting to see which features are important in the decision making process. 
 
 ## Hyperparameter Tuning
 
 I used XGBoost Classifier, a boosted decision tree model, as it has proven to be performant and very fast. Also, it was one of the estimaors used in the besy model of the AutoML run. I chose to tune max_depth and n_estimators as they are the ones that usually make a huge difference in the results and have a wide range. 
-* The **n_estimators** were among (200, 400, 500, 700, 1000) because through experiments considering the size of the datasets, they do perform pretty well. Another factor to consider was time as more estimators take more time to train.
+* The **n_estimators** were chosen among (200, 400, 500, 700, 1000) because through experiments considering the size of the datasets, they do perform pretty well. Another factor to consider was time as more estimators take more time to train.
 * **max_depth** was between 2-7. I didn't go beyond 7 because that tends to overfit models.
 
 I used RandomParameterSampling because it computationally and time efficient. The differences between random and grid sampling are discussed below.
@@ -92,7 +127,7 @@ I used RandomParameterSampling because it computationally and time efficient. Th
 
 ### Results
 
-The models had close results ranging from accuracy of 0.76 to 0.798. Models with higher estimators and max_depth performed poorly probably because of overfitting on the train dataset
+The models had close results ranging from accuracy of 0.76 to 0.798. Models with higher number of estimators and max_depth performed poorly probably because of overfitting on the train dataset
 
 ![HyperDrive RunDetails in the notebook](screenshots/hd_run_details_widget.PNG)
 *HyperDrive RunDetails in the notebook*
@@ -111,7 +146,7 @@ The best model had an accuracy score of 0.798, with n_estimators as 500 and max_
 
 
 ## Model Deployment
-I deployed the Automl model by first registering it then creating an ACI instance for it. 
+I deployed the Automl model by first registering it then creating an ACI instance for it. The [deploy environment details can be found here](deploy_environment/conda_dependencies.yml) 
 
 To query the endpoint in a python environmnet see sample code below:
 	```
