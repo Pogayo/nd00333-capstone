@@ -49,12 +49,12 @@ automl_config = AutoMLConfig(task="classification", #this is our goal, to classi
                              model_explainability=True,
                              **automl_settings,
                             ) 
-                            ```
+```
 
 
 ### Results
 
- The best model was a Voting Ensemble model with a cv accuracy of 0.8646.  The ensemble implemented soft voting and had 12 estimators, one of them being Xgboost. It used a LabelEncoder to encode the label column and used botch character and word TFIDF to generate a total of 5190 features from the text column.
+The best model was a Voting Ensemble model with a cv accuracy of 0.8646.  The ensemble implemented soft voting and had 12 estimators, one of them being Xgboost. It used a LabelEncoder to encode the label column and used botch character and word TFIDF to generate a total of 5190 features from the text column.
 
 
 ![AutoML RunDetails in the notebook](screenshots/RunDetails_Widget-nb.PNG) 50 different models were tried and ensemble models had the highest accuracy followed by XGBoost models and LightGBM respectively.
@@ -62,7 +62,9 @@ automl_config = AutoMLConfig(task="classification", #this is our goal, to classi
 
 ![AutoML RunDetails in the ML Studio](screenshots/RunDetails_studio.PNG)
 
-![Best model in the ML Studio](screenshots/best_model_run_id.PNG) The best model was a voting ensemble with an accuracy of 0.8646
+
+![Best model in the ML Studio](screenshots/best_model_run_id.PNG) *The best model was a voting ensemble with an accuracy of 0.8646*
+
 
 To improve the AutoML model, we will need more data and do some advanced feature engineering on the text column such as getting the count of words etc.
 
@@ -80,12 +82,20 @@ I used RandomParameterSampling because it computationally and time efficient. Th
 The models had close results ranging from accuracy of 0.76 to 0.798. Models with higher estimators and max_depth performed poorly probably because of overfitting on the train dataset
 
 ![HyperDrive RunDetails in the notebook](screenshots/hd_run_details_widget.PNG)
+*HyperDrive RunDetails in the notebook*
+
+
 ![HyperDrive RunDetails in the ML Studio](screenshots/hd_run_details_widget_studio.PNG)
+*HyperDrive RunDetails in the ML Studio*
+
 
 The best model had an accuracy score of 0.798, with n_estimators as 500 and max_depth as 3.
 
-![ HyperDrive Best model in the notebook](screenshots/hd_best_model_run_id_nb.PNG)
-![ HyperDrive Best model in the ML Studio](screenshots/hd_best_model_run_id_studio.PNG)
+![ HyperDrive Best model in the notebook](screenshots/hd_best_model_run_id_nb.PNG)  *HyperDrive Best model in the notebook*
+
+
+![ HyperDrive Best model in the ML Studio](screenshots/hd_best_model_run_id_studio.PNG) *HyperDrive Best model in the ML Studio*
+
 
 The results from Hyperdrive could be improved by:
 1. Adding more data so that the model can have a wide range to learn from.
@@ -94,8 +104,8 @@ The results from Hyperdrive could be improved by:
 4. Advanced text feature engineering such as getting the count of words etc.
 
 ## Model Deployment
-*TODO*: Give an overview of the deployed model and instructions on how to query the endpoint with a sample input.
 I deployed the Automl model by first registering it then creating an ACI instance for it. 
+
 To query the endpoint in a python environmnet see sample code below:
 	```
 	import requests
@@ -113,13 +123,20 @@ To query the endpoint in a python environmnet see sample code below:
 	print("prediction:", resp.text) #this is your prediction
 	```
 
-![ Active model endpoint](screenshots/deployment_healthy.PNG)  An active (Healthy) deployment of the model
-![ model deploy succeeded](screenshots/deployment_succeeded.PNG) The best model deploy has succeeded from the models section of Azure ML
+You can also use other tools such as PostMan and the commandline to query the endpoint using the endpoint scoring uri
+
+![ Active model endpoint](screenshots/deployment_healthy.PNG)  *An active (Healthy) deployment of the model*
+
+
+![ model deploy succeeded](screenshots/deployment_succeeded.PNG) *The best model deploy has succeeded from the models section of Azure ML*
+
 
 ## Screen Recording
 [YouTube Link](https://youtu.be/8PUd4A_N4ro)
 
 
 ## Standout Suggestions
-![ Deploy logs](screenshots/deployment_healthy.PNG)I displayed the logs of the deployment which contains information on requests and the status of the deployed models such as if insights are enabled, when it was being initiated etc.
+I displayed the logs of the deployment which contains information on requests and the status of the deployed models such as if insights are enabled, when it was being initiated etc.
+
+![ Deploy logs](screenshots/deployment_healthy.PNG) *Deploy logs*
 
