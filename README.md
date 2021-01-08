@@ -57,11 +57,12 @@ automl_config = AutoMLConfig(task="classification", #this is our goal, to classi
 The best model was a Voting Ensemble model with a cv accuracy of 0.8646.  The ensemble implemented soft voting and had 12 estimators, one of them being Xgboost. It used a LabelEncoder to encode the label column and used botch character and word TFIDF to generate a total of 5190 features from the text column.
 
 
-![AutoML RunDetails in the notebook](screenshots/RunDetails_Widget-nb.PNG) 50 different models were tried and ensemble models had the highest accuracy followed by XGBoost models and LightGBM respectively.
+![AutoML RunDetails in the notebook](screenshots/RunDetails_Widget-nb.PNG) 
+
+50 different models were tried and ensemble models had the highest accuracy followed by XGBoost models and LightGBM respectively.
 
 
-![AutoML RunDetails in the ML Studio](screenshots/RunDetails_studio.PNG)
-
+![Best model notebook](screenshots/best_model_run_id_nb.PNG) *The best model and it's pipeline outline. Encode the feature and target then build ensemble model.*
 
 ![Best model in the ML Studio](screenshots/best_model_run_id.PNG) *The best model was a voting ensemble with an accuracy of 0.8646*
 
